@@ -47,25 +47,29 @@ instance (Show a, Show b) => Show (Perceptron [a] b) where
   show (Perceptron []) = "Untrained Perceptron"
   show (Perceptron (t:w)) = "Perceptron: "++show w++" * X + "++show t
 
+maxIters :: Int
+maxIters = 1000000
+
 instance (Show a, Real a, Fractional a) => Model Perceptron [a] a where
   predict :: Perceptron [a] a -> [a] -> a
   predict (Perceptron w) input = dotV w (1:input)
-  trainSet m ldata = trainSet' 1000000 m (cycle ldata) where
+  trainSet m ldata = trainSet' maxIters m (cycle ldata) where
     trainSet' :: Int -> Perceptron [a] a -> [([a], a)] -> Perceptron [a] a
     trainSet' 0 m _ = m
     trainSet' _ m [] = m
     trainSet' it m@(Perceptron w) ((i, o):is) = trained where
       -- trace (show i++" -> "++show o++"\nP: "++show p++"\n W: "++show w) trained where
       trained = trainSet' (it-1) (Perceptron w') is
-      learningRate = 0.001
+      learningRate :: a
+      learningRate = (0.001/fromIntegral maxIters)*fromIntegral it
       e :: a
-      e = learningRate * (o - predict m i)
+      e = learningRate * (predict m i - o)
       w' :: [a]
-      w' = addV w $ scaleV e (1:i)
+      w' = subV w $ scaleV e (1:i)
   blank = Perceptron []
 
 instance (Show a, Real a, Fractional a) => Model Perceptron [a] Bool where
-  predict (Perceptron w) i = 0.5 < predict m' i where
+  predict (Perceptron w) i = 0 < predict m' i where
     m' :: Perceptron [a] a
     m' = Perceptron w
   trainSet (Perceptron w) d = Perceptron w' where
@@ -76,4 +80,4 @@ instance (Show a, Real a, Fractional a) => Model Perceptron [a] Bool where
 
 bTof :: (Real a, Fractional a) => Bool -> a
 bTof True = 1.0
-bTof False = 0.0
+bTof False = -1.0

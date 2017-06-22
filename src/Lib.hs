@@ -17,7 +17,7 @@ devSet1 = [([2, 3], 27)
          ,([5, 11], 71)
          ]
 
-trainingSet1 = map (\x -> (toYM x, x)) [1..100]
+trainingSet1 = map (\x -> (toYM x, x)) [1..200]
   -- [([21, 7], 259)
   -- ,([1, 0], 12)
   -- ,([3, 8], 44)
@@ -50,11 +50,11 @@ test acc model' training dev = do
 exampleRun :: IO ()
 exampleRun = do
   putStrLn "Running Jungell"
-  test getRegressionAccuracy
-    (blank :: LinReg [Double] Double) trainingSet1 devSet1
+  --test getRegressionAccuracy
+    --(blank :: LinReg [Double] Double) trainingSet1 devSet1
   test getRegressionAccuracy
     (blank :: Perceptron [Double] Double) trainingSet1 devSet1
-  test getClassificationAccuracy
-    (blank :: LinReg [Double] Bool) trainingSet2 devSet2
+  --test getClassificationAccuracy
+    --(blank :: LinReg [Double] Bool) trainingSet2 devSet2
   test getClassificationAccuracy
     (blank :: Perceptron [Double] Bool) trainingSet2 devSet2
